@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# large files
+data/aso/USCASJ/aso_spatial.nc
+
 # Distribution / packaging
 .Python
 build/
