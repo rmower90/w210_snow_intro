@@ -1,0 +1,20 @@
+name: snow_simple_ml
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.9
+  - geopandas
+  - jupyterlab
+  - matplotlib-base
+  - matplotlib-scalebar
+  - netcdf4
+  - nodejs
+  - numpy
+  - pandas
+  - pip
+  - pyproj
+  - rasterio
+  - rioxarray
+  - requests
+  - shapely
+  - xarray
