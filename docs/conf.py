@@ -46,4 +46,5 @@ html_theme_options = {
     "collapse_navigation": False,  # keep the navigation expanded
     "sticky_navigation": True,     # optionally, make the sidebar sticky as you scroll
     "navigation_depth": 1,         # adjust the depth as needed
+    "display_version": True,      # display the version number in the sidebar
 }
