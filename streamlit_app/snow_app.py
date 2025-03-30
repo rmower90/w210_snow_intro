@@ -1,3 +1,5 @@
+### Import the package we need
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -5,11 +7,19 @@ import plotly.express as px
 import os
 import geopandas as gpd
 from netCDF4 import Dataset
+import pathlib
 
+st.set_page_config(
+    page_title="Mo Data Sno Problem",
+    page_icon="❄️",
+    layout="centered"
+)
+
+### HERE IS WHERE WE BUILD THE DATAFRAMES WE USE TO CREATE THE VISUALIZATIONS ###
 
 # Dataframe for Snow Pillow Coordinates
 aso_site_name = 'USCASJ'
-insitu_dir = f'/Users/vqu/VirtualEnv/myVirtualEnv/Capstone/qa/'
+insitu_dir = '/Users/vqu/VirtualEnv/myVirtualEnv/Capstone/w210_snow_intro/streamlit_app/qa/'
 
 # Function to load snow pillow data and locations
 def load_pillow_nc(insitu_dir):
@@ -45,11 +55,12 @@ if insitu_locations is not None:
 # Display the DataFrame with longitude and latitude
 insitu_locations_df = insitu_locations[['id', 'longitude', 'latitude', 'elevation_m']]
 
-# Define variables
-summaryTable_dir = '/Users/vqu/VirtualEnv/myVirtualEnv/Capstone/USCASJ/'
+# Table for Snow Pillow Readings
+summaryTable_dir = '/Users/vqu/VirtualEnv/myVirtualEnv/Capstone/w210_snow_intro/streamlit_app/USCASJ/'
 obs_threshold = 0.5
 # Load data
 df_sum_total = pd.read_csv(f'{summaryTable_dir}total.csv')
+# df_sum_total = pd.read_csv(f'qa/pillow_orig_table.csv')
 # Create list of pillows
 all_pils = df_sum_total.columns.to_list()
 all_pils.remove('time')
@@ -70,109 +81,28 @@ for i in pils_list:
   sp_mm.append([x for x in df_sum_total[i]])
   sp_name.append([i]*len(df_sum_total))
 
-# Generate some example time series data
-dates = pd.date_range(start='2023-01-01', periods=100, freq='D')
-data_2d = np.random.randn(100).cumsum()
-data_3d = np.random.randn(100).cumsum()
-
-# Create a DataFrame
-df_2d = pd.DataFrame({'Date': dates, 'Value': data_2d})
-
 # Add a categorical variable to the 3D data
-categories = np.random.choice(['Category A', 'Category B', 'Category C'], size=100)
 df_3d = pd.DataFrame({
     'Date': pd.to_datetime(sum(sp_time, [])),
     'Value': sum(sp_mm, []),
     'Category': sum(sp_name, [])
 })
 
-# Streamlit app
+### HERE IS WHERE WE BUILD THE STREAMLIT DASHBOARD ###
+
+# Title
 st.title('Mo Data Sno Problem')
 
-# Add a dropdown menu for category selection at the top of the main page
-category_options = ['All Categories'] + df_3d['Category'].unique().tolist()
-selected_category = st.selectbox('Select Category', category_options)
+# Intro
+st.write("Lorem Ipsum - This dashboard provides an overview of snow pillow data from various locations. The data is used to analyze and visualize the snow depth and other related metrics. The dashboard includes several interactive plots and maps that allow users to explore the data in different ways.")
 
-# Sidebar for date filtering
-st.sidebar.header('Filter by Date')
-start_date = st.sidebar.date_input('Start date', df_3d['Date'].min())
-end_date = st.sidebar.date_input('End date', df_3d['Date'].max())
+st.header('San Joaquin')
 
-# Filter data based on date selection
-filtered_df_2d = df_2d[(df_2d['Date'] >= pd.to_datetime(start_date)) & (df_2d['Date'] <= pd.to_datetime(end_date))]
-# Filter data based on date selection and category selection
-if selected_category == 'All Categories':
-    filtered_df_3d = df_3d[(df_3d['Date'] >= pd.to_datetime(start_date)) & (df_3d['Date'] <= pd.to_datetime(end_date))]
-else:
-    filtered_df_3d = df_3d[(df_3d['Date'] >= pd.to_datetime(start_date)) & (df_3d['Date'] <= pd.to_datetime(end_date)) & (df_3d['Category'] == selected_category)]
-
-
-# 2D Time Series Plot with Plotly
-st.subheader('2D Time Series')
-fig_2d = px.line(filtered_df_2d, x='Date', y='Value', title='2D Time Series')
-st.plotly_chart(fig_2d)
-
-# Line Chart with Categories
-st.subheader('Line Chart with Categories')
-fig_line = px.line(
-    filtered_df_3d, 
-    x='Date', 
-    y='Value', 
-    color='Category',
-    title='Line Chart with Categories'
-)
-st.plotly_chart(fig_line)
-
-# 3D Scatter Plot with Categorical X-axis and Date Dropdown
-st.subheader('3D Scatter Plot with Categories')
-fig_3d = px.scatter_3d(
-    df_3d, 
-    x='Category', 
-    y='Date', 
-    z='Value', 
-    color='Category',
-    title='3D Scatter Plot with Categories'
-)
-# Update the layout to set the initial camera view
-fig_3d.update_layout(
-    scene_camera=dict(
-        eye=dict(x=1.8, y=2.1, z=1.8),
-        center=dict(x=0, y=0, z=-0.5)
-          # Adjust these values to set the desired starting view
-    ),
-    width=1200,  # Set the width of the plot
-    height=800   # Set the height of the plot
-)
-# Update marker size
-fig_3d.update_traces(marker=dict(size=3))
-st.plotly_chart(fig_3d)
-
-# 3D Line Chart with Categories
-st.subheader('3D Line Chart with Categories')
-fig_3d_line = px.line_3d(
-    filtered_df_3d, 
-    x='Category', 
-    y='Date', 
-    z='Value', 
-    color='Category',
-    title='3D Line Chart with Categories'
-)
-fig_3d_line.update_layout(
-    scene_camera=dict(
-        eye=dict(x=1.8, y=2.1, z=1.8),
-        center=dict(x=0, y=0, z=-0.5)
-          # Adjust these values to set the desired starting view
-    ),
-    width=1200,  # Set the width of the plot
-    height=800   # Set the height of the plot
-)
-st.plotly_chart(fig_3d_line)
-# Add a button to reset the date filter in the sidebar
-if st.sidebar.button('Reset Date Filter'):
-    start_date = df_2d['Date'].min()
-    end_date = df_2d['Date'].max()
+st.write("The San Joaquin River originates in the high-elevation Eastern Sierra Nevada mountain range, flowing southwest to the San Joaquin Valley floor, before turning northwest to its confluence with the Sacramento River at the Sacramento-San Joaquin Delta (Delta). The San Joaquin River has three major tributaries: the Merced, Tuolumne, and Stanislaus rivers. The Cosumnes (a tributary to Mokelumne River), Mokelumne, and Calaveras rivers also flow into the San Joaquin River where the river joins the tidally influenced Delta.")
+st.write("We'll use San Joaquin River Basin for our demo as they have the most upcoming ASO flights available for validation")
 
 st.subheader('Map Plot of Snow Pillows')
+st.write("Start by getting a better understanding of the snow pillows locations for the basin")
 # Sample data with latitude, longitude, and an identifier
 data = {
     'latitude': insitu_locations_df['latitude'],
@@ -212,16 +142,42 @@ fig.update_traces(textfont=dict(color='black'))
 # Display the figure in Streamlit with scroll zoom enabled
 st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True})
 
+# 3D Line Chart with Categories
+st.subheader('Pillow Snow Measurements on ASO Flight Dates')
+fig_3d_line = px.line_3d(
+    df_3d, 
+    x='Category', 
+    y='Date', 
+    z='Value', 
+    color='Category',
+)
+fig_3d_line.update_layout(
+    scene_camera=dict(
+        eye=dict(x=1.8, y=2.1, z=1.8),
+        center=dict(x=0, y=0, z=-0.5)
+          # Adjust these values to set the desired starting view
+    ),
+    width=1200,  # Set the width of the plot
+    height=700,   # Set the height of the plot
+    scene=dict(
+        xaxis=dict(
+            title='Snow Pillows',
+            showticklabels=False
+        )
+    )
+)
+st.plotly_chart(fig_3d_line)
+
 
 # 3D Scatter Plot with Categorical X-axis and Date Dropdown
-st.subheader('3D Snow Pillows')
+st.subheader('3D Scatter Plot with Categories')
 fig_3d = px.scatter_3d(
-    df, 
-    x='latitude', 
-    y='longitude', 
-    z='elevation_m', 
-    color='id',
-    title='3D Scatter Plot of Snow Pillows'
+    df_3d, 
+    x='Category', 
+    y='Date', 
+    z='Value', 
+    color='Category',
+    title='3D Scatter Plot with Categories'
 )
 # Update the layout to set the initial camera view
 fig_3d.update_layout(
@@ -234,5 +190,15 @@ fig_3d.update_layout(
     height=800   # Set the height of the plot
 )
 # Update marker size
-fig_3d.update_traces(marker=dict(size=3.5))
-st.plotly_chart(fig_3d,key='another_3d_plot')
+fig_3d.update_traces(marker=dict(size=3))
+st.plotly_chart(fig_3d)
+
+# Sidebar for date filtering
+st.sidebar.header('Filter by Date')
+start_date = st.sidebar.date_input('Start date', df_3d['Date'].min())
+end_date = st.sidebar.date_input('End date', df_3d['Date'].max())
+
+# Add a button to reset the date filter in the sidebar
+if st.sidebar.button('Reset Date Filter'):
+    start_date = df_2d['Date'].min()
+    end_date = df_2d['Date'].max()
