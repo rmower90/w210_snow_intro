@@ -144,6 +144,7 @@ st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True})
 
 # 3D Line Chart with Categories
 st.subheader('Pillow Snow Measurements on ASO Flight Dates')
+st.write('')
 fig_3d_line = px.line_3d(
     df_3d, 
     x='Category', 
