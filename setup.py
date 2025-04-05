@@ -33,6 +33,7 @@ setup(
         "streamlit",
         "requests",
         "shapely",
+        "cupy",
     ],
     extras_require={
         "docs": [
