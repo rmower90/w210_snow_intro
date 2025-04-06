@@ -347,7 +347,9 @@ if aso_flight_date != "Dates":
 else:
     st.image('data/aso/blank.png')
 
-# New Code 
+
+
+## Section 3 - Training Data - Slide 6
 
 import streamlit as st
 import os
@@ -398,3 +400,8 @@ with col1:
 with col2:
     st.image(img2, caption="Top Image", use_column_width=True)
     st.image(img3, caption="Bottom Image", use_column_width=True)
+
+
+
+## Section 4 - Slide 7
+
