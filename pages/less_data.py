@@ -1,5 +1,5 @@
 import streamlit as st
-from bokeh.plotting import figure
+from bokeh.plotting import figure, show
 from bokeh.models import ColumnDataSource, CustomJS
 from bokeh.layouts import column
 from bokeh.tile_providers import get_provider, Vendors
@@ -10,8 +10,9 @@ import numpy as np
 
 st.title("Mo Snow Less Data Hello World")
 
-# Load snowpillow data from the CSV file
-sj_pillow_df = pd.read_csv('sj_pillow_locations.csv')
+# Load snow pillow data from the CSV file
+sj_pillow_df = pd.read_csv('data/snow_pillows/locations/sj_pillow_locations.csv')
+sj_pillow_readings_df = pd.read_csv('data/snow_pillows/measurements/sj_pillow_qa_table.csv')
 
 # Covert coordinates to Mercarto Projection
 def coor_conv(df, lon="longitude", lat="latitude"):
@@ -47,55 +48,55 @@ scatter.circle(x='x', y='y', size=10, source=source, color='color',line_color='b
 # Add text labels to points
 scatter.text(x='x', y='y', text='snow_pillow', source=source, text_color='black', text_font_size='8pt', x_offset=5, y_offset=-2)
 
-# Create bar plot
-bar_source = ColumnDataSource(data=dict(snow_pillow=[], counts=[]))
-bar = figure(x_range=list(sj_pillow_df['id'].unique()),
-             title="Snow Pillow Count for Selected Point",
-             width=400, height=400)
-bar.vbar(x='snow_pillow', top='counts', width=0.9, source=bar_source)
+# Remove the line chart and its data source
+# line_source = ColumnDataSource(data=dict(x=[], y=[]))
+# line = figure(title="Line Chart for Selected Snow Pillow", width=400, height=400)
+# line.line('x', 'y', source=line_source)
+# Ensure the p chart is defined and ready to be updated
 
-# Create line plot
-line_source = ColumnDataSource(data=dict(x=[], y=[]))
-line = figure(title="Line Chart for Selected Snow Pillow", width=400, height=400)
-line.line('x', 'y', source=line_source)
+sj_pillow_readings_df['time'] = pd.to_datetime(sj_pillow_readings_df['time'])
+line = figure(title="Line Chart Example", x_axis_label='Time', y_axis_label='Values', x_axis_type='datetime')
+colors = ['blue', 'green', 'red', 'orange', 'purple', 'pink', 'brown', 'gray']
+for i, col in enumerate(sj_pillow_readings_df.columns[1:]):
+    line.line(sj_pillow_readings_df['time'], sj_pillow_readings_df[col], legend_label=col, line_width=2, color=colors[i % len(colors)])
 
-# Callback function
-callback = CustomJS(args=dict(source=source, bar_source=bar_source, line_source=line_source), code="""
+df_json = sj_pillow_readings_df.to_json(orient='columns')
+
+# Modify the callback to update the p chart
+callback_2 = CustomJS(args=dict(source=source, p=line, df=df_json), code="""
     const indices = cb_obj.indices;
     if (indices.length === 0) return;
-    let snow_pillows = [];
-    let counts = [];
-    let x_values = [];
-    let y_values = [];
+    let selectedSnowPillows = [];
+    let selectedIds = []; // New array to store the ids
     for (let i = 0; i < indices.length; i++) {
         const index = indices[i];
         const data = source.data;
         const selectedSnowPillow = data['snow_pillow'][index];
-        let count = 0;
-        for (let j = 0; j < data['snow_pillow'].length; j++) {
-            if (data['snow_pillow'][j] === selectedSnowPillow) {
-                count++;
-            }   
-        }
-        snow_pillows.push(selectedSnowPillow);
-        counts.push(count);
-        for (let j = 0; j < data['snow_pillow'].length; j++) {
-            if (data['snow_pillow'][j] === selectedSnowPillow) {
-                x_values.push(data['x'][j]);
-                y_values.push(data['y'][j]);
-            }
-        }
+        selectedSnowPillows.push(selectedSnowPillow);
+        selectedIds.push(data['snow_pillow'][index]); // Add the id to the new array
     }
-    bar_source.data = { snow_pillow: snow_pillows, counts: counts };
-    bar_source.change.emit();
-    line_source.data = { x: x_values, y: y_values };
-    line_source.change.emit();
+                    
+    console.log(selectedIds);
+                      
+    console.log(selectedIds);
+    // Get the data for the line chart
+    // const df = JSON.parse(df_json);
+    const x_values = df['time'];
+    // Create a new data source with the selected snow pillows
+    const new_data = {};
+    new_data['time'] = x_values;
+    for (let i = 0; i < selectedIds.length; i++) {
+        const id = selectedIds[i];
+        new_data[id] = df[id];
+    }
+    // Update the line chart's data source
+    p.data = new_data;
+    p.change.emit();
 """)
+source.selected.js_on_change("indices", callback_2)
+# Display the updated plots
+st.bokeh_chart(column(scatter, line), use_container_width=True)
 
-source.selected.js_on_change("indices", callback)
-
-# Display plots
-st.bokeh_chart(column(scatter, bar, line), use_container_width=True)
 
 # New Code 
 
@@ -118,7 +119,7 @@ def display_pdf(file_path):
     st.markdown(pdf_display, unsafe_allow_html=True)
 
 # Path to images folder
-image_folder = "/Users/branndonmarion/Desktop/MIDS/DS 210/w210_snow_intro/images"
+image_folder = "images"
 
 # Dropdown for selecting elevation bin
 category_options = ['Elevation 1', 'Elevation 2', 'Elevation 3', 'Elevation 4', 'Elevation 5', 'Elevation 6', 'Elevation 7']
