@@ -13,32 +13,13 @@ from bokeh.io import show
 from bokeh.models import Toggle
 
 ## Section 1 - EDA Less Data Overview & Motivation
-st.title("EDA - Less Data")
+st.title("SWE Estimatator - Less Data Approach")
 st.subheader("Overview")
-st.write("Lorem Ipsum")
-st.subheader("Motivation")
-st.write("Lorem Ipsum")
-
-st.subheader("Market Comparison")
-st.write("Compare our results against the latest ASO flights")
-col1, col2 = st.columns(2)
-# Add a selectbox to each column
-with col1:
-    option1 = st.selectbox(
-        'Select ASO flight date:',
-        ('2025/03/25', '2025/02/26')
-    )
-with col2:
-    option2 = st.selectbox(
-        'Select elevation:',
-        ('7k', '7-8k', '8-9k','9-10k','10-11k','11-12k','12k')
-    )
-# Display image
-st.image(f'data/MLR_Comparison/{option2}/{option1.replace("/","_")}.png')
+st.write("Welcome to the interactive data exploration platform. Below are dynamic charts and intuitive menus designed for delving into the dataset. Explore the intricacies of the model training process and evaluate the results with ease. Gain insights and a deeper understanding of the analysis.")
 
 ## Section 2 - Basin Data Exploration
 st.title("Basin Data Exploration")
-st.write("Lorem Ipsum Intro Text")
+st.write("Use the interactive chart below displaying relevant snow pillows dependant on the selected basin. Selecting a specific snow pillow reveals its measurements on the accompanying time series chart. The chart is overlaid with historic ASO flight measurements, illustrating relationships between snow pillow data and ASO flight data.")
 
 col3, col4 = st.columns(2)
 # Add a selectbox to each column
@@ -185,7 +166,10 @@ if selected_1 == 'San Joaquin':
     line.add_tools(aso_hover)
 
     # Display the updated plots
-    st.bokeh_chart(column(scatter, line), use_container_width=False)
+    col5, col6 = st.columns(2)
+    with col5:
+        st.bokeh_chart(column(scatter, line), use_container_width=False)
+
 else:
     # Load snow pillow data from the CSV file
     tm_pillow_df = pd.read_csv('data/snow_pillows/locations/tm_pillow_locations.csv')
@@ -206,7 +190,7 @@ else:
     coor_conv(tm_pillow_df)
 
     # Create map plot
-    scatter = figure(title="SJ Snow Pillows", tools="tap,pan,wheel_zoom,reset,lasso_select", 
+    scatter = figure(title="TM Snow Pillows", tools="tap,pan,wheel_zoom,reset,lasso_select", 
                 x_axis_type="mercator", y_axis_type="mercator",
             width=700, height=500,  x_range=(-13428333, -13090833), y_range=(4363056, 4671115))
 
@@ -326,15 +310,17 @@ else:
     # Display the updated plots
     st.bokeh_chart(column(scatter, line), use_container_width=False)
 
+st.write("Select a date to visualize a LiDAR derived map from a historic flight map.")
+
 col5, col6 = st.columns(2)
 # Add a selectbox to each column
 with col5:
     flight_dates = ["Dates"]
     if selected_1 == 'San Joaquin':
-        sj_flights = sj_aso_df['time'].tolist()
+        sj_flights = [text.replace("-", "/") for text in sj_aso_df['time']]
         flight_dates.extend(sj_flights)
     else:
-        tm_flights = tm_aso_df['time'].tolist()
+        tm_flights = [text.replace("-", "/") for text in tm_aso_df['time']]
         flight_dates.extend(tm_flights)
     aso_flight_date = st.selectbox(
         'Select ASO flight date:',
@@ -352,22 +338,41 @@ else:
 ## Section 3 - Training Data - Slide 6
 
 # Write title 
-st.title("Modeling/Training Validation")
+st.title("Modeling & Training Validation")
 
 # Path to images folder
 image_folder = "images"
 
 # Dropdown for selecting elevation bin
-elevation_options = ['7k','7-8k','8-9k','9-10k','10-11k','12k','Total']
+elevation_options = ['<7k','7-8k','8-9k','9-10k','10-11k','11-12k','>12k','Total']
 selected_elevation = st.selectbox('Select Elevation', elevation_options)
 
 # Basin Options
-basin_options = ['USCASJ', 'USCATM']
+basin_options = ['San Joaquin', 'Toulumne']
 selected_basin = st.selectbox('Select Basin', basin_options)
 
 # Form file path
-png_path = f"images/{selected_basin}/MLR/{selected_elevation}/validation.png"
+png_path = f"images/{"USCASJ" if selected_basin == "San Joaquin" else "USCATM"}/MLR/{'7k' if selected_elevation == '<7k' else '12k' if selected_elevation == ">12k" else selected_elevation}/validation.png"
 
 
 # Display selected png
 st.image(png_path)
+
+## Section 4
+
+st.subheader("Results and Evaluation")
+st.write("Compare results against the latest ASO flights")
+col1, col2, cola, colb = st.columns(4)
+# Add a selectbox to each column
+with col1:
+    option1 = st.selectbox(
+        'Select ASO flight date:',
+        ('2025/03/25', '2025/02/26')
+    )
+with col2:
+    option2 = st.selectbox(
+        'Select elevation:',
+        ('<7k', '7-8k', '8-9k','9-10k','10-11k','11-12k','>12k','Total','Combined')
+    )
+# Display image
+st.image(f'data/MLR_Comparison/{'7k' if option2 == '<7k' else '12k' if option2 == ">12k" else option2}/{option1.replace("/","_")}.png')
