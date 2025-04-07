@@ -9,14 +9,14 @@ def display_pdf(file_path):
     pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="800px" type="application/pdf"></iframe>'
     st.markdown(pdf_display, unsafe_allow_html=True)
 
-display_pdf("/Users/branndonmarion/Desktop/MIDS/DS 210/w210_snow_intro/slides/slides.pdf")
+display_pdf("slides/slides.pdf")
 
 
 from PIL import Image
 import os
 
 # --- SETUP: Load images ---
-image_folder = "/Users/branndonmarion/Desktop/MIDS/DS 210/w210_snow_intro/slides/indiv"
+image_folder = "slides/indiv"
 images = sorted([
     os.path.join(image_folder, f) for f in os.listdir(image_folder)
     if f.lower().endswith(('.png', '.jpg', '.jpeg'))

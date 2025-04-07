@@ -366,18 +366,8 @@ basin_options = ['USCASJ', 'USCATM']
 selected_basin = st.selectbox('Select Basin', basin_options)
 
 # Form file path
-png_path = f"/Users/branndonmarion/Desktop/MIDS/DS 210/w210_snow_intro/images/{selected_basin}/MLR/{selected_elevation}/validation.png"
+png_path = f"images/{selected_basin}/MLR/{selected_elevation}/validation.png"
 
 
 # Display selected png
 st.image(png_path)
-
-# Right column: two stacked images
-with col2:
-    st.image(img2, caption="Top Image", use_column_width=True)
-    st.image(img3, caption="Bottom Image", use_column_width=True)
-
-
-
-## Section 4 - Slide 7
-

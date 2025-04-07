@@ -11,7 +11,7 @@ def load_lottie_file(filepath: str):
         return json.load(f)
 
 # Path to your local Lottie JSON file
-lottie_snow = load_lottie_file('/Users/branndonmarion/Desktop/MIDS/DS 210/w210_snow_intro/animations/snowfall.json')
+lottie_snow = load_lottie_file('animations/snowfall.json')
 
 # Streamlit app content
 
