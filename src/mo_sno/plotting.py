@@ -14,7 +14,7 @@ import plotly.io as pio
 import cupy as cp
 
 # Set default renderer.
-pio.renderers.default = 'colab'
+pio.templates.default = 'plotly_dark'
 
 
 def create_scatter_plot(test_df, pred_lin, pred_xgb, target_col, basin_name):
@@ -77,22 +77,22 @@ def create_timeseries_plot(test_df, pred_lin, pred_xgb, target_col, basin_name):
     fig.add_trace(go.Scatter(
         x=x, y=y_original, mode='lines',
         name='Original SWE',
-        line=dict(color='gray', width=2, dash='dash')
+        line=dict(color='gray', width=2, dash='dash'),
     ))
     fig.add_trace(go.Scatter(
         x=x, y=y_adjusted, mode='lines',
         name='Adjusted SWE',
-        line=dict(color='cyan', width=2)
+        line=dict(color='blue', width=2)
     ))
     fig.add_trace(go.Scatter(
         x=x, y=y_lin, mode='lines',
         name='Linear Regression',
-        line=dict(color='cyan', dash='dot', width=2)
+        line=dict(color='blue', dash='dot', width=2)
     ))
     fig.add_trace(go.Scatter(
         x=x, y=y_xgb, mode='lines',
         name='XGBoost',
-        line=dict(color='yellow', width=2)
+        line=dict(color='red', width=2)
     ))
     fig.add_trace(go.Scatter(
         x=x, y=test_df['aso_swe'].to_numpy(), mode='markers',
@@ -136,17 +136,17 @@ def create_timeseries_plot_train(train_df, pred_lin, pred_xgb, target_col, basin
     fig.add_trace(go.Scatter(
         x=x, y=y_adjusted, mode='lines',
         name='Adjusted SWE',
-        line=dict(color='cyan', width=2)
+        line=dict(color='blue', width=2)
     ))
     fig.add_trace(go.Scatter(
         x=x, y=y_lin, mode='lines',
         name='Linear Regression',
-        line=dict(color='cyan', dash='dot', width=2)
+        line=dict(color='blue', dash='dot', width=2)
     ))
     fig.add_trace(go.Scatter(
         x=x, y=y_xgb, mode='lines',
         name='XGBoost',
-        line=dict(color='yellow', width=2)
+        line=dict(color='red', width=2)
     ))
     if 'aso_swe' in train_df.columns:
         fig.add_trace(go.Scatter(

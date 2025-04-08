@@ -1,8 +1,8 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import base64
 
-st.title("Slides ")
-
+st.set_page_config(page_title="Background Presentation", layout="wide")
 def display_pdf(file_path):
     with open(file_path, "rb") as f:
         base64_pdf = base64.b64encode(f.read()).decode('utf-8')
@@ -11,6 +11,9 @@ def display_pdf(file_path):
 
 display_pdf("slides/slides.pdf")
 
+
+embed_url = "https://docs.google.com/presentation/d/1cFgZvaY9bqWV2Kb8Bwpyv8krJZoJ6usgwN9UAGztpHM/edit#slide=id.p"
+components.iframe(embed_url, width=1600, height=800)
 
 from PIL import Image
 import os
