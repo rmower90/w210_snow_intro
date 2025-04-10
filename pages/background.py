@@ -13,7 +13,7 @@ display_pdf("slides/slides.pdf")
 
 
 embed_url = "https://docs.google.com/presentation/d/1cFgZvaY9bqWV2Kb8Bwpyv8krJZoJ6usgwN9UAGztpHM/edit#slide=id.p"
-components.iframe(embed_url, width=1600, height=800)
+components.iframe(embed_url, width=2200, height=1200)
 
 from PIL import Image
 import os
