@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from bokeh.plotting import figure, show
 from bokeh.models import ColumnDataSource, CustomJS, DatetimeTickFormatter, HoverTool, Range1d, TapTool
@@ -141,7 +142,7 @@ if selected_1 == 'San Joaquin':
     # ASO flight data
     sj_aso_df = pd.read_csv('data/aso/USCASJ/uscasj_aso_sum.csv')
     sj_aso_df['aso_mean_bins_mm'] = sj_aso_df['aso_mean_bins_mm'].apply(lambda x: f"{x:.2f}" if pd.notnull(x) else x)
-
+    
     # Plot points for ASO flights
     points_data = {
         'time': pd.to_datetime(sj_aso_df['time']),  # Example dates
@@ -352,7 +353,13 @@ basin_options = ['San Joaquin', 'Toulumne']
 selected_basin = st.selectbox('Select Basin', basin_options)
 
 # Form file path
-png_path = f"images/{"USCASJ" if selected_basin == "San Joaquin" else "USCATM"}/MLR/{'7k' if selected_elevation == '<7k' else '12k' if selected_elevation == ">12k" else selected_elevation}/validation.png"
+png_path = os.path.join(
+    "images",
+    "USCASJ" if selected_basin == "San Joaquin" else "USCATM",
+    "MLR",
+    '7k' if selected_elevation == "<7k" else '12k' if selected_elevation == ">12k" else selected_elevation,
+    "validation.png"
+)
 
 
 # Display selected png
@@ -375,4 +382,11 @@ with col2:
         ('<7k', '7-8k', '8-9k','9-10k','10-11k','11-12k','>12k','Total','Combined')
     )
 # Display image
-st.image(f'data/MLR_Comparison/{'7k' if option2 == '<7k' else '12k' if option2 == ">12k" else option2}/{option1.replace("/","_")}.png')
+image_path = os.path.join(
+    "data",
+    "MLR_Comparison",
+    '7k' if option2 == "<7k" else '12k' if option2 == ">12k" else option2,
+    f"{option1.replace('/', '_')}.png"
+)
+
+st.image(image_path)

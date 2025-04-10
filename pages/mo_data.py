@@ -89,14 +89,14 @@ with tab_train:
                     df, cutoff_year=2023, save_path=model_path
                 )
 
-                st.success(f"✅ Models trained for {basin}")
-                st.metric("Linear RMSE", f"{metrics['lin']['test_rmse']:.2f}")
-                st.metric("XGBoost RMSE", f"{metrics['xgb']['test_rmse']:.2f}")
+                # st.success(f"✅ Models trained for {basin}")
+                # st.metric("Linear RMSE", f"{metrics['lin']['test_rmse']:.2f}")
+                # st.metric("XGBoost RMSE", f"{metrics['xgb']['test_rmse']:.2f}")
 
-                st.subheader("🌡️ Sample Temperature Stats (Training Data)")
-                st.write("Min Temperature (°C):", train_df["daymet_tmin"].describe())
-                st.write("Max Temperature (°C):", train_df["daymet_tmax"].describe())
-                st.write("Mean Temperature (°C):", train_df["daymet_mean_temp"].describe())
+                # st.subheader("🌡️ Sample Temperature Stats (Training Data)")
+                # st.write("Min Temperature (°C):", train_df["daymet_tmin"].describe())
+                # st.write("Max Temperature (°C):", train_df["daymet_tmax"].describe())
+                # st.write("Mean Temperature (°C):", train_df["daymet_mean_temp"].describe())
 
                 st.plotly_chart(
                     plot_feature_importances(models['xgb'], features, f"{basin} Feature Importance - XGBoost"),
@@ -160,10 +160,10 @@ with tab_predict:
             expected_features = model_lin.feature_names_in_
             aligned_input = input_df.reindex(columns=expected_features, fill_value=0.0)
 
-            st.subheader("🔍 Debug: Feature Alignment Check")
-            st.write("📌 Expected by model:", list(expected_features))
-            st.write("📌 Provided input columns:", list(input_df.columns))
-            st.write("📌 Aligned input columns:", list(aligned_input.columns))
+            # st.subheader("🔍 Debug: Feature Alignment Check")
+            # st.write("📌 Expected by model:", list(expected_features))
+            # st.write("📌 Provided input columns:", list(input_df.columns))
+            # st.write("📌 Aligned input columns:", list(aligned_input.columns))
 
             if not (aligned_input.columns == expected_features).all():
                 st.warning("⚠️ Feature columns are misaligned. Predictions may be unreliable.")

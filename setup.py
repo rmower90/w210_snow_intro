@@ -40,14 +40,13 @@ setup(
         "scipy",
         "xgboost",
         "scikit-learn",
-        "bokeh",
+        "bokeh==2.4.3",
         "cudf-cu12",
         "cuml-cu12",
         "joblib",
         "xarray[io]",
         "netCDF4",
         "streamlit_lottie",
-        
     ],
     extras_require={
         "docs": [
