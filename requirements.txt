@@ -10,7 +10,7 @@ requests
 shapely
 statsmodels
 cupy-cuda12x
-numpy==1.26
+numpy==2.0.0
 scipy
 xgboost
 scikit-learn==1.6.1
