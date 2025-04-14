@@ -30,7 +30,7 @@ import src.helper.plotting as plotting
 st.set_page_config(page_title="Less Data Dashboard", layout="wide")
 
 # Tabs
-tab_overview, tab_data, tab_train, tab_inference,tab_conclusions = st.tabs(["Overview", "Data", "Training","Inference","Conclusions"])
+tab_overview, tab_data, tab_train, tab_inference,tab_conclusions = st.tabs(["Overview", "Data", "Training","Results","Conclusions"])
 
 # directories.
 # Get path relative to the project root
