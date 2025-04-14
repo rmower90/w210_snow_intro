@@ -1,4 +1,5 @@
 fastapi
+tqdm
 uvicorn
 xarray
 pandas
@@ -11,7 +12,7 @@ statsmodels
 numpy
 scipy
 xgboost
-scikit-learn
+scikit-learn==1.6.1
 bokeh==2.4.3
 joblib
 xarray[io]
