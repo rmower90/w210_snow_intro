@@ -507,7 +507,7 @@ with tab_inference:
                                                      elevation_bin = selected_dict[selected_elevation_2]['elevation_bin'],
                                                      ymax_lim = selected_dict[selected_elevation_2]['ymax_lim'],
                                                      FirstPlot = True,text_adjust = selected_dict[selected_elevation_2]['text_adjust'])
-    plt.suptitle(f'{selected_basin_2} - {selected_elevation} Mean SWE Comparison',fontweight = 'bold',fontsize = 24)
+    plt.suptitle(f'{selected_basin_2} - {selected_elevation_2} Mean SWE Comparison',fontweight = 'bold',fontsize = 24)
     plt.tight_layout()
     st.pyplot(fig)
     ### Model -------------------------------------------- \
