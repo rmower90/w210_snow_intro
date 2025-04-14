@@ -8,33 +8,17 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 import warnings
 import plotly.io as pio
-import plotly.graph_objects as go
+
+from src.mo_sno.preprocessing import get_intermediate_insitu_data, get_preprocessed_dataset
 
 warnings.filterwarnings("ignore")
 pio.templates.default = 'plotly_dark'
 
-# ---------------------------------------------
-# Helper functions
-# ---------------------------------------------
-def add_derived_variables(df, tmin_col='daymet_tmin', tmax_col='daymet_tmax',
-                          precip_col='daymet_prcp', elevation_col='z'):
-    df = df.copy()
-    df['daymet_mean_temp'] = (df[tmin_col] + df[tmax_col]) / 2.0
-    threshold = 2.0
-    ref_elev = df[elevation_col].median() if elevation_col in df.columns else 1.0
-    df['daymet_snowfall_index'] = df.apply(
-        lambda row: row[precip_col] * max(0, threshold - row['daymet_mean_temp']) *
-                    (row[elevation_col] / ref_elev),
-        axis=1
-    )
-    return df
-
-def add_degree_days_and_accumulated_precip(df, window=7, temp_threshold=0.0, precip_window=7):
-    df = df.copy()
-    df['daymet_daily_degree_day'] = df['daymet_mean_temp'].apply(lambda x: max(0, x - temp_threshold))
-    df[f'daymet_degree_days_{window}d'] = df['daymet_daily_degree_day'].rolling(window=window, min_periods=1).sum()
-    df[f'daymet_accumulated_precip_{precip_window}d'] = df['daymet_prcp'].rolling(window=precip_window, min_periods=1).sum()
-    return df
+# Elevation band binning function (ordinal)
+def compute_elev_band(z_meters):
+    elev_ft = z_meters * 3.28084
+    bins = [7000, 8000, 9000, 10000, 11000, 12000]
+    return np.digitize(elev_ft, bins)
 
 def adjust_swe_bias_loess(pillow_swe, aso_swe, loess_frac=0.1, alpha=0.1):
     from statsmodels.nonparametric.smoothers_lowess import lowess
@@ -47,11 +31,7 @@ def adjust_swe_bias_loess(pillow_swe, aso_swe, loess_frac=0.1, alpha=0.1):
         print(f"Computed bias factor: {bias_factor:.3f}")
         bias_corrected = pillow_swe * bias_factor
 
-    if not np.issubdtype(bias_corrected.index.dtype, np.number):
-        x = bias_corrected.index.map(pd.Timestamp.toordinal)
-    else:
-        x = bias_corrected.index.values
-
+    x = bias_corrected.index.map(pd.Timestamp.toordinal)
     smoothed = lowess(bias_corrected.values, x, frac=loess_frac, return_sorted=False)
     smoothed_series = pd.Series(smoothed, index=bias_corrected.index)
     blended = alpha * smoothed_series + (1 - alpha) * pillow_swe
@@ -65,39 +45,43 @@ def compute_metrics(y_true, y_pred):
     return rmse, r2
 
 def train_all_models(data, cutoff_year=2023, save_path=None):
+    data = data.copy()
     data.index = pd.to_datetime(data.index)
     target_col = 'pillow_swe_corrected' if 'pillow_swe_corrected' in data.columns else 'pillow_swe'
-    features = ['pillow_swe'] + [c for c in data.columns if c.startswith('daymet_')]
-    if 'z' in data.columns:
-        features.insert(1, 'z')
+
+    # Drop z and z_sq if present
+    data.drop(columns=[c for c in ['z', 'z_sq'] if c in data.columns], inplace=True)
+
+    # Add elevation band as an ordinal feature
+    data['elev_band'] = compute_elev_band(data['z']) if 'z' in data.columns else 0
+
+    # Define features
+    features = ['elev_band'] + [c for c in data.columns if c.startswith('daymet_') or c == 'pillow_swe']
     features = [f for f in features if f != target_col]
 
+    # Train/test split
     train_df = data[data.index.year < cutoff_year].dropna(subset=features + [target_col])
+    print(f"Training data shape: {train_df.head(50)}")
     test_df = data[data.index.year >= cutoff_year].dropna(subset=features + [target_col])
 
     X_train, y_train = train_df[features], train_df[target_col]
     X_test, y_test = test_df[features], test_df[target_col]
 
-    model_lin = LinearRegression()
+    model_lin = LinearRegression(positive=True)
     model_lin.fit(X_train, y_train)
     pred_lin = model_lin.predict(X_test)
     pred_lin_train = model_lin.predict(X_train)
 
+    monotonic = [1 if f == 'elev_band' else 0 for f in features]
     xgb_params = {
         'objective': 'reg:squarederror',
-        'tree_method': 'auto',
         'max_depth': 6,
         'learning_rate': 0.15,
         'subsample': 0.8,
         'colsample_bytree': 0.8,
-        'min_child_weight': 1.0,
-        'gamma': 0.1,
-        'lambda': 2.0,
-        'alpha': 1.0,
+        'n_estimators': 500,
         'random_state': 42,
-        'n_estimators': 500
     }
-
     model_xgb = xgb.XGBRegressor(**xgb_params)
     model_xgb.fit(X_train, y_train)
     pred_xgb = model_xgb.predict(X_test)
@@ -115,17 +99,15 @@ def train_all_models(data, cutoff_year=2023, save_path=None):
         joblib.dump(model_lin, save_path + '_lin.pkl')
         model_xgb.save_model(save_path + '_xgb.json')
 
-    return train_df, test_df, features, target_col, {'lin': model_lin, 'xgb': model_xgb}, {'lin': pred_lin, 'xgb': pred_xgb, 'lin_train': pred_lin_train, 'xgb_train': pred_xgb_train}, metrics
+    return train_df, test_df, features, target_col, {'lin': model_lin, 'xgb': model_xgb}, \
+           {'lin': pred_lin, 'xgb': pred_xgb, 'lin_train': pred_lin_train, 'xgb_train': pred_xgb_train}, metrics
 
 if __name__ == '__main__':
-    from preprocessing import get_intermediate_insitu_data, get_preprocessed_dataset
-
     ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
     data_dir = os.path.join(ROOT, "data", "mo_data")
     model_dir = os.path.join(ROOT, "models")
     intermediate_path = os.path.join(data_dir, "intermediate_insitu.parquet")
     insitu_gdf = get_intermediate_insitu_data(intermediate_path, overwrite=False)
-
     basins = ["San_Joaquin", "Tuolumne"]
 
     for basin in basins:
@@ -133,8 +115,6 @@ if __name__ == '__main__':
         save_path = os.path.join(data_dir, f"saved_{basin}_preprocessed.parquet")
         df = get_preprocessed_dataset(basin, insitu_gdf, save_path, overwrite=True)
         df['basin'] = basin
-        df = add_derived_variables(df)
-        df = add_degree_days_and_accumulated_precip(df)
         df['pillow_swe_corrected'] = adjust_swe_bias_loess(
             df['pillow_swe'], df['aso_swe'], loess_frac=0.021, alpha=0.9
         )
@@ -145,26 +125,5 @@ if __name__ == '__main__':
         train_df, test_df, features, target_col, models, predictions, metrics = train_all_models(
             df, cutoff_year=2023, save_path=model_path
         )
-
         print("Model metrics:")
         print(metrics)
-
-        lin_model_path = model_path + "_lin.pkl"
-        xgb_model_path = model_path + "_xgb.json"
-
-        print("Testing saved models...")
-        try:
-            model_lin = joblib.load(lin_model_path)
-            print("✅ Linear Regression model loaded.")
-            sample = test_df[features].iloc[[0]]
-            print("Prediction (Linear):", float(model_lin.predict(sample)[0]))
-        except Exception as e:
-            print("❌ Linear Regression model failed:", e)
-
-        try:
-            model_xgb = xgb.XGBRegressor()
-            model_xgb.load_model(xgb_model_path)
-            print("✅ XGBoost model loaded.")
-            print("Prediction (XGBoost):", float(model_xgb.predict(sample)[0]))
-        except Exception as e:
-            print("❌ XGBoost model failed:", e)
