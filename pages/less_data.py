@@ -23,9 +23,9 @@ from shapely.geometry import Polygon, MultiPolygon
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'scripts')))
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'scripts')))
 
-import helper.lm_model as lm_model
-import helper.load_data as load_data
-import helper.plotting as plotting
+import src.helper.lm_model as lm_model
+import src.helper.load_data as load_data
+import src.helper.plotting as plotting
 
 st.set_page_config(page_title="Less Data Dashboard", layout="wide")
 
