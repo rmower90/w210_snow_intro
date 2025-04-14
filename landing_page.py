@@ -1,95 +1,118 @@
 import streamlit as st
-from streamlit_lottie import st_lottie
-import json
+from PIL import Image
 
-st.set_page_config(layout="wide")
-st.title("❄️ Mo Data Sno Problem ❄️")
+# Load images (update the file paths accordingly)
+header_image = Image.open("../w210_snow_intro/images/sierra-nevada.webp")
+swe_diagram = Image.open("../w210_snow_intro/images/Overview/less_is_more.png")
 
-# Load the Lottie animation from local file
-def load_lottie_file(filepath: str):
-    with open(filepath, "r") as f:
-        return json.load(f)
+# Configure the page: wide layout and an expanded sidebar by default
+st.set_page_config(page_title="SWE Prediction Project", layout="wide", initial_sidebar_state='expanded')
 
-# Path to your local Lottie JSON file
-lottie_snow = load_lottie_file('animations/snowfall.json')
+# --- Custom CSS for a professional scientific template ---
+st.markdown("""
+    <style>
+        /* Base container styling for a clean look */
+        .block-container {
+            padding: 2rem 5rem;
+            max-width: 1200px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+        /* Header styling */
+        .header {
+            text-align: center;
+            border-bottom: 1px solid #e1e1e1;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+        }
+        .header h1 {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+        .header p {
+            font-size: 1.3rem;
+            color: #34495e;
+            margin-top: 0.5rem;
+        }
+        /* Sidebar styling: position sidebar on the right */
+        [data-testid="stSidebar"] {
+            right: 0;
+            left: auto;
+            padding: 1rem;
+        }
+        /* Section and card styling */
+        .section {
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1.1rem;
+            color: #555;
+        }
+        .card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        /* List style adjustments */
+        ul {
+            padding-left: 1.2rem;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
-# Streamlit app content
+# --- Header Section with Image ---
+st.markdown("""
+<div class="header">
+    <h1>SWE Prediction Project</h1>
+    <p>Harnessing Data Science to Tackle the Challenges of Snow Water Equivalent Prediction</p>
+</div>
+""", unsafe_allow_html=True)
 
-st.subheader('Problem Statement')
+st.image(header_image, use_container_width=True, caption="Project Overview Image")
 
-# Problem Description
-st.write("""
-International aid often follows political pathways rather than data-driven approaches, resulting in inefficiencies that can lead to missed opportunities in addressing the root causes of terrorism. 
-Factors such as economic instability, lack of education, and governance issues in at-risk regions are often overlooked. 
-To tackle this challenge, a data-driven framework is proposed, incorporating geospatial analysis of terrorism incident data, 
-data modeling of international aid flows, and sentiment analysis on NGO and regional narratives to identify areas of potential impact. 
-Additionally, an AI-driven recommendation system would be developed to optimize funding allocation, 
-ensuring resources are directed to where they are needed most.
-""")
+# --- Project Overview Section ---
+st.markdown("""
+<div class="section card">
+    <h2>Project Overview</h2>
+    <p>
+        This project applies advanced machine learning techniques to predict Snow Water Equivalent (SWE), a critical metric 
+        for water resource management, flood forecasting, and environmental planning.
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
-# Display the Lottie animation in two columns
-col1, col2 = st.columns(2)
+# --- Why is SWE Difficult to Predict? Section with Diagram Image ---
+st.markdown("""
+<div class="section card">
+    <h2>Why is SWE Difficult to Predict?</h2>
+    <p>
+        SWE prediction remains a significant challenge due to:
+    </p>
+    <ul>
+        <li><strong>Meteorological Variability:</strong> Constant changes in weather conditions affect snow accumulation and melting.</li>
+        <li><strong>Complex Terrain Dynamics:</strong> Variations in elevation, aspect, and land cover create non-uniform snow distribution.</li>
+        <li><strong>Nonlinear Processes:</strong> Conversion of snowfall into meltwater is influenced by multiple, interacting factors.</li>
+        <li><strong>Data Limitations:</strong> Inconsistencies and uncertainties in remote sensing and ground-based measurements.</li>
+    </ul>
+</div>
+""", unsafe_allow_html=True)
 
-with col1:
-    st_lottie(lottie_snow, speed=1, loop=True, quality="high", height=400)
+st.image(swe_diagram, use_container_width=True, caption="Diagram of SWE Prediction Challenges")
 
-with col2:
-    st_lottie(lottie_snow, speed=1, loop=True, quality="high", height=400)
-# 2nd Info section
-st.subheader('Impact / Market Opportunity')
-
-# Create two columns
-col1, col2 = st.columns(2)
-
-with col1:
-    st.write("""
-Declining snowpack levels due to climate change are creating cascading challenges across critical sectors, threatening regional economies and highlighting the need for innovative solutions. 
-The U.S. winter recreation industry, valued at 70 billion annually, faces shorter seasons and reduced snowfall, with snow-related visitation projected to drop 40–60 percent by century’s end. 
-This could translate into annual economic losses between 1.23 billion and 2.05 billion (Scott et al., 2023). 
-Agriculture and energy sectors are also at risk. In Washington’s Yakima Basin, decreased snowpack may reduce stream flows, causing 
-13–70 million in annual losses by mid-century (US EPA, 2023). 
-Hydropower generation in the Western U.S. dropped 11% during the 2022–2023 water year—about 141.6 million MWh of clean energy lost (EIA, 2024).
-""")
-
-with col2:
-    st.write("""
-Accurate snowpack monitoring is essential. Programs like California’s 2022 aerial snow surveys (31 flights at 9.5M) and Colorado’s Gunnison Basin pilot (1M/year) show costs can exceed 300K per flight. 
-As climate risks grow, so will demand for monitoring investments. Water from Western U.S. snowpack supports 40 million people and a 1.4 trillion economy (Colorado River). 
-Executive Order 14008 underscores the federal priority for climate resilience. 
-Intended users include agencies like the U.S. Bureau of Reclamation (BOR), Army Corps of Engineers, and California DWR, which manage critical reservoirs. 
-Over the past two years, BOR has awarded ~15M through its Snow Water Supply Forecasting Program, signaling strong market demand for improved snowpack data and tools to optimize water management and protect infrastructure.
-""")
-
-# Display the Lottie animation in two columns
-col1, col2 = st.columns(2)
-
-with col1:
-    st_lottie(lottie_snow, speed=1, loop=True, quality="high", height=400)
-
-with col2:
-    st_lottie(lottie_snow, speed=1, loop=True, quality="high", height=400)
-    
-# Additional info Section
-st.subheader('Mo Stuff - The Difference')
-st.write("""
-The key differentiation of the MVP lies in its integration of advanced machine learning models for real-time, scalable, and cost-effective snowpack monitoring and prediction. 
-Unlike existing solutions, which suffer from issues like forcing bias, satellite latency, or operational complexity, the MVP combines basin-wide SWE predictions, distributed SWE mapping, and SnowModel emulation into a single platform. 
-It minimizes bias and improves accuracy through physics-informed and graph-based models, achieving lower RMSE and higher R² values compared to alternatives. 
-The MVP also reduces reliance on costly lidar surveys by providing comparable insights using existing datasets, 
-while its intuitive user interface ensures accessibility for non-technical users like water resource managers. 
-Designed for flexibility, it supports scenario testing, delivers actionable insights through interactive dashboards, and scales efficiently to accommodate diverse basins and data sources, 
-which makes it a unique and user-centric solution in the snowpack monitoring landscape.
-""")
-
-# Group information
-st.subheader('Group Member LinkedIn')
-st.markdown("[Paulina Alvarado-Goldman](https://www.linkedin.com/in/paulina-alvarado-goldman/), [Branndon Marion](https://www.linkedin.com/in/branndon-marion/), [Philip Monaco](https://www.linkedin.com/in/philmonaco/), [Ross Mower](https://www.linkedin.com/in/rossmower/), [Vincent Qu](https://www.linkedin.com/in/vincentqu/)")
-st.markdown("")
-st.markdown("")
-st.markdown("")
-st.markdown("")
-
-
-
-
-
+# --- Navigation Instructions ---
+st.markdown("""
+<div class="section">
+    <h2>Navigation</h2>
+    <p>
+        To explore this project further, please use the sidebar (now on the right) to navigate among the following pages:
+    </p>
+    <ol>
+        <li>Landing Page</li>
+        <li>Background</li>
+        <li>Less Data</li>
+        <li>Mo Data</li>
+        <li>Conclusions</li>
+    </ol>
+</div>
+""", unsafe_allow_html=True)
