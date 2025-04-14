@@ -9,7 +9,7 @@ streamlit
 requests
 shapely
 statsmodels
-cupy
+cupy-cuda12x
 numpy
 scipy
 xgboost
