@@ -9,6 +9,7 @@ streamlit
 requests
 shapely
 statsmodels
+cupy
 numpy
 scipy
 xgboost
