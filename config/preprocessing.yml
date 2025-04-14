@@ -1,0 +1,59 @@
+insitu_path: "data/mo_data/insitu_season.parquet.gzip"
+
+basins:
+  San_Joaquin:
+    shapefile: "data/mo_data/sj_basin_shape_geog.shp"
+    aso: "data/mo_data/sj_aso_spatial.nc"
+  Tuolumne:
+    shapefile: "data/mo_data/t_basin_shape_geog.shp"
+    aso: "data/mo_data/t_aso_spatial.nc"
+
+daymet_path: "data/mo_data/filtered_data"
+
+sensors:
+  - AGP
+  - BCB
+  - BGP
+  - BSH
+  - CHM
+  - DAN
+  - DPO
+  - FLV
+  - GEM
+  - GRM
+  - GRV
+  - HNT
+  - KSP
+  - KUB
+  - KUP
+  - LLE
+  - MHP
+  - PSR
+  - RCK
+  - SLK
+  - STL
+  - STR
+  - SWM
+  - TMR
+  - TNY
+  - TUM
+  - UBC
+  - VLC
+  - WWC
+  - DDM
+  - GIN
+  - GNL
+  - HRS
+  - KIB
+  - LMS
+  - PDS
+  - REL
+  - SLI
+  - SMW
+  - SPA
+  - VLR
+  - WHW
+
+coord_crs: "EPSG:4326"
+working_crs: "EPSG:32611"
+buffer_meters: 5000
