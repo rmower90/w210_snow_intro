@@ -1,4 +1,4 @@
-
+import os
 import streamlit as st
 # from bokeh.io import show
 import matplotlib.pyplot as plt
@@ -13,7 +13,8 @@ import src.helper.plotting as plotting
 st.set_page_config(page_title="Less Data Dashboard", layout="wide")
 
 tab_conclusions, tab_imputation = st.tabs(["Conclusions", "Imputation"])
-
+base_dir = os.path.dirname(os.path.abspath(__file__))  # /.../pages
+root_dir = os.path.abspath(os.path.join(base_dir, "..")) # /.../ (one level up)
 
 with tab_conclusions:
     ## Section 4 -- Testing/Results
@@ -46,7 +47,7 @@ with tab_conclusions:
                                                      elevation_bin = selected_dict[selected_elevation_2]['elevation_bin'],
                                                      ymax_lim = selected_dict[selected_elevation_2]['ymax_lim'],
                                                      FirstPlot = True,text_adjust = selected_dict[selected_elevation_2]['text_adjust'])
-    plt.suptitle(f'{selected_basin_2} - {selected_elevation} Mean SWE Comparison',fontweight = 'bold',fontsize = 24)
+    plt.suptitle(f'{selected_basin_2} - {selected_elevation_2} Mean SWE Comparison',fontweight = 'bold',fontsize = 24)
     plt.tight_layout()
     st.pyplot(fig)
     ### Model -------------------------------------------- \
