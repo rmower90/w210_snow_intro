@@ -2,7 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import base64
 
-# st.set_page_config(page_title="Background Presentation", layout="wide")
+st.set_page_config(page_title="Background Presentation", layout="wide")
 # def display_pdf(file_path):
 #     with open(file_path, "rb") as f:
 #         base64_pdf = base64.b64encode(f.read()).decode('utf-8')
