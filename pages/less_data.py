@@ -1,6 +1,6 @@
 import os
 import streamlit as st
-from bokeh.plotting import figure, show
+from bokeh.plotting import figure
 from bokeh.models import ColumnDataSource, CustomJS, DatetimeTickFormatter, HoverTool, Range1d, TapTool
 from bokeh.layouts import column
 from bokeh.tile_providers import get_provider, Vendors
@@ -10,7 +10,7 @@ from bokeh.embed import components
 import pandas as pd
 import math
 import numpy as np
-from bokeh.io import show
+# from bokeh.io import show
 from bokeh.models import Toggle
 import sys
 import matplotlib.pyplot as plt
