@@ -10,7 +10,10 @@ import matplotlib.pyplot as plt
 import src.helper.load_data as load_data
 import src.helper.plotting as plotting
 
-tab_conclusions = st.tabs(["Conclusions"])
+st.set_page_config(page_title="Less Data Dashboard", layout="wide")
+
+tab_conclusions, tab_imputation = st.tabs(["Conclusions", "Imputation"])
+
 
 with tab_conclusions:
     ## Section 4 -- Testing/Results
