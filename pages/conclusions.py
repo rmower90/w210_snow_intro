@@ -31,6 +31,9 @@ pdf_file_2 = "../w210_snow_intro/docs/cheatsheet.pdf"
 with open(pdf_file_1, "rb") as f:
     pdf_data_1 = f.read()
     
+with open(pdf_file_2, "rb") as f:
+    pdf_data_2 = f.read()
+    
     
 base64_pdf_1 = get_pdf_as_base64(pdf_file_1)
 base64_pdf_2 = get_pdf_as_base64(pdf_file_2)
@@ -86,9 +89,16 @@ with tab_conclusions:
     
 with tab_imputation:
     st.download_button(
-        label="Download PDF",
+        label="Download Future Research Abstracts PDF",
         data=pdf_data_1,
         file_name="futureresearchabstracts.pdf",
+        mime="application/pdf",
+    )
+    
+    st.download_button(
+        label="Download Cheatsheet PDF",
+        data=pdf_data_2,
+        file_name="cheatsheet.pdf",
         mime="application/pdf",
     )
     
