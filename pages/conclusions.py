@@ -101,9 +101,8 @@ with tab_imputation:
         file_name="cheatsheet.pdf",
         mime="application/pdf",
     )
-    
-    st.markdown(pdf_display_1, unsafe_allow_html=True)
-    st.markdown(pdf_display_2, unsafe_allow_html=True)
+    st.write("Imputation \nImputation is an underdeveloped field of research. Based on extensive testing across a wide range of imputation methods, we have developed a comprehensive cheat sheet to provide a practical guide for addressing missing values in time series and spatial dataset. This is particularly relevant for those with complex seasonal patterns and significant data gaps. It underscores the critical role of preprocessing before applying imputation.This includes methods such as standardizing formats, preserving real zeros, resolving duplicates, and evaluating levels of missingness. This guide evaluates over 25 techniques, including KNN, Kalman filtering, ARIMA, Random Forests, Gaussian Process Regression, and hybrid approaches. Detailed insights into their suitability across data types, formats, and missing data mechanisms (MCAR, MAR, MNAR) are also provided. We also introduce robust validation strategies by using metrics like MAE, RMSE, and stationarity tests. Our goal is to empower users to choose methods that align with the unique characteristics of their datasets for reliable and bias-aware analysis.")
+
 # # Create line plot
 #         line_source = ColumnDataSource(data=dict())
 #         line = figure(
