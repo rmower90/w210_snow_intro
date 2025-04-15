@@ -27,6 +27,11 @@ def get_pdf_as_base64(file_path):
 # Path to your PDF file
 pdf_file_1 = "../w210_snow_intro/docs/futureresearchabstracts.pdf"
 pdf_file_2 = "../w210_snow_intro/docs/cheatsheet.pdf"
+
+with open(pdf_file_1, "rb") as f:
+    pdf_data_1 = f.read()
+    
+    
 base64_pdf_1 = get_pdf_as_base64(pdf_file_1)
 base64_pdf_2 = get_pdf_as_base64(pdf_file_2)
 
@@ -80,6 +85,13 @@ with tab_conclusions:
     st.pyplot(fig)
     
 with tab_imputation:
+    st.download_button(
+        label="Download PDF",
+        data=pdf_data_1,
+        file_name="futureresearchabstracts.pdf",
+        mime="application/pdf",
+    )
+    
     st.markdown(pdf_display_1, unsafe_allow_html=True)
     st.markdown(pdf_display_2, unsafe_allow_html=True)
 # # Create line plot
