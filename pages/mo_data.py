@@ -30,8 +30,8 @@ FEATURE_LABELS = {
 data_dir = "data/mo_data"
 model_dir = "models"
 basin_acreages = {
-    "San_Joaquin": 10163200,
-    "Tuolumne": 1253120
+    "San_Joaquin": 863375,
+    "Tuolumne": 500000
 }
 basins = list(basin_acreages.keys())
 
@@ -40,7 +40,7 @@ elevation_band_labels = [
     "10000–11000 ft", "11000–12000 ft", "> 12000 ft"
 ]
 
-st.set_page_config(page_title="Mo Data Dashboard", layout="wide")
+st.set_page_config(page_title="Mo Data Dashboard", layout="centered")
 tab_train, tab_predict, tab_analytics = st.tabs(["Model Training", "Model Prediction", "Analytics"])
 
 # ----------------------------- TAB 1: TRAINING -----------------------------
@@ -54,7 +54,7 @@ with tab_train:
             for basin in basins:
                 st.subheader(f"Basin: {basin}")
                 df_path = os.path.join(data_dir, f"saved_{basin}_preprocessed.parquet")
-                df = get_preprocessed_dataset(basin, insitu_gdf, df_path, overwrite=True)
+                df = get_preprocessed_dataset(basin, insitu_gdf, df_path, overwrite=False)
                 df['pillow_swe_corrected'] = adjust_swe_bias_loess(
                     df['pillow_swe'], df['aso_swe'], loess_frac=0.021, alpha=0.9
                 )
