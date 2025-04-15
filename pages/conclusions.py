@@ -2,6 +2,7 @@ import os
 import streamlit as st
 # from bokeh.io import show
 import matplotlib.pyplot as plt
+import base64
 
 # import helper scripts
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'scripts')))
@@ -10,11 +11,28 @@ import matplotlib.pyplot as plt
 import src.helper.load_data as load_data
 import src.helper.plotting as plotting
 
-st.set_page_config(page_title="Less Data Dashboard", layout="wide")
+st.set_page_config(page_title="Less Data Dashboard", layout="centered")
 
 tab_conclusions, tab_imputation = st.tabs(["Conclusions", "Imputation"])
 base_dir = os.path.dirname(os.path.abspath(__file__))  # /.../pages
 root_dir = os.path.abspath(os.path.join(base_dir, "..")) # /.../ (one level up)
+
+def get_pdf_as_base64(file_path):
+    with open(file_path, "rb") as file:
+        pdf_bytes = file.read()
+    # Encode the PDF file's bytes to a base64 string.
+    base64_pdf = base64.b64encode(pdf_bytes).decode('utf-8')
+    return base64_pdf
+
+# Path to your PDF file
+pdf_file_1 = "../w210_snow_intro/docs/futureresearchabstracts.pdf"
+pdf_file_2 = "../w210_snow_intro/docs/cheatsheet.pdf"
+base64_pdf_1 = get_pdf_as_base64(pdf_file_1)
+base64_pdf_2 = get_pdf_as_base64(pdf_file_2)
+
+# Create an HTML iframe to embed the PDF
+pdf_display_1 = f'<iframe src="data:application/pdf;base64,{base64_pdf_1}" width="900" height="1000" type="application/pdf"></iframe>'
+pdf_display_2 = f'<iframe src="data:application/pdf;base64,{base64_pdf_2}" width="900" height="1000" type="application/pdf"></iframe>'
 
 with tab_conclusions:
     ## Section 4 -- Testing/Results
@@ -22,7 +40,7 @@ with tab_conclusions:
     st.title("Results and Evaluation")
     st.write("Here we are comparing model inference results in the San Joaquin. We compare the best ***MLR Drop NaNs*** and ***Predict NaNs*** models to our label (***ASO***) and benchmarks (***SNODAS*** and ***UASWE***). The flights occured on February 26th, 2025 and March 25th, 2025. Future work will extend a similar comparison to the Tuolumne basin.")
     st.write("- First, we compare the models for each elevation interval, ***separately***.")
-    st.write("- Next, we compare the models across elevation intervals and generate statisctics relevant to our ***KPI*** metrics.")
+    st.write("- Next, we compare the models across elevation intervals and generate statistics relevant to our ***KPI*** metrics.")
     ### Elevation -------------------------------------------- \
     st.write("## Elevation Comparison")
 
@@ -60,7 +78,10 @@ with tab_conclusions:
 
     fig = plotting.create_model_comparison(root_dir,aso_site_name,date_str = selected_test_date.replace('-',''))
     st.pyplot(fig)
-
+    
+with tab_imputation:
+    st.markdown(pdf_display_1, unsafe_allow_html=True)
+    st.markdown(pdf_display_2, unsafe_allow_html=True)
 # # Create line plot
 #         line_source = ColumnDataSource(data=dict())
 #         line = figure(
